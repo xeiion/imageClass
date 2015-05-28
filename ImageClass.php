@@ -103,6 +103,7 @@ class ImageClass {
         }
 
         $rotate = imagerotate($this->CreateImage, $rotate, 0);
+
         $this->CreateImage = $rotate;
     }
 
@@ -135,8 +136,11 @@ class ImageClass {
         $this->image = $flip;
     }
 
-    public function blur() {
-        imagefilter($this->CreateImage, IMG_FILTER_GAUSSIAN_BLUR);
+    public function blur($blur = 1) {
+        for ($i = 1; $i < $blur; $i++) {
+            echo '1';
+            imagefilter($this->CreateImage, IMG_FILTER_GAUSSIAN_BLUR);
+        }
     }
 
     public function brightness($bright = 0) {
@@ -166,11 +170,44 @@ class ImageClass {
         imagegammacorrect($this->CreateImage, 1.0, $gammaRatio);
     }
 
-    public function AddText($text = null, $font = null, $fontsize = 13, $option = 'center', $rgb = '255,255,255') {
-        //unfinished
+    public function AddText($text = null, $font = null, $fontsize = 13, $option = 'bottom-left', $rgb = '255,255,255') {
+        $option = explode('-', $option);
         $Colors = explode(',', $rgb);
         if (count($Colors) > 3) {
             throw new Exception('Only 3 value is valid in rgb');
+        }
+        $bbox = imagettfbbox(0, 0, $font, $text);
+        list($width, $height, $type, $attr) = getimagesize($this->image);
+
+        $text_width = $bbox[2] - $bbox[0];
+        $text_height = $bbox[3] - $bbox[1];
+
+        if (empty($option[1])) {
+                throw new Exception('Gotta fill second parameter for text position');
+        } else {
+            if ($option[1] == 'left') {
+                $y = ($text_width) + 20;
+            } elseif ($option[1] == 'right') {
+                $y = ($width) - ($text_width) - ($fontsize * 3);
+            } elseif ($option[1] == 'center') {
+                $y = ($width / 2) - ($text_width / 2);
+            }
+        }
+
+        if ($option[1] == 'left') {
+            $y = ($text_width) + 20;
+        } elseif ($option[1] == 'right') {
+            $y = ($width) - ($text_width) - ($fontsize * 3);
+        } elseif ($option[1] == 'center') {
+            $y = ($width / 2) - ($text_width / 2);
+        }
+
+        if ($option[0] == 'middle') {
+            $x = ($height / 2) - ($text_height / 2);
+        } elseif ($option[0] == 'bottom') {
+            $x = ($height / 1) - ($text_height / 2) - 25;
+        } elseif ($option[0] == 'top') {
+            $x = ($height / 6) - ($text_height / 6) - 5;
         }
 
         if (!is_numeric($Colors[0]) OR ! is_numeric($Colors[1]) OR ! is_numeric($Colors[2])) {
@@ -178,8 +215,7 @@ class ImageClass {
         }
         $white = imagecolorallocate($this->CreateImage, $Colors[0], $Colors[1], $Colors[2]);
 
-
-        imagettftext($this->CreateImage, $fontsize, 0, 75, 300, $white, $font, $text);
+        imagettftext($this->CreateImage, $fontsize, 0, $y, $x, $white, $font, $text);
     }
 
     public function crop() {
