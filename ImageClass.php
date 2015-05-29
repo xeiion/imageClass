@@ -26,7 +26,6 @@ class ImageClass {
 
     function setImage($image) {
         $this->image = $image;
-
         $FullPath = pathinfo($this->image);
         switch ($FullPath['extension']) {
             case 'jpg':
@@ -44,43 +43,39 @@ class ImageClass {
                 break;
         }
     }
-    
-    public function upload($file,$maxSize = 4325720,$target_path = null,$name = null){
-        
-        if($file['fil']['error'] == 4){
-             throw new Exception('file cannot be empty');
-        }
-        
-        if(!is_array($file)){
-            throw new Exception('File gotta be an array');
-        }
 
-        $Mime = array(
-            'image/jpeg',
-            'image/gif',
-            'image/png'
+    public function upload($file, $maxSize = 4325720, $Target_name = null, $target_path = '') {
+        if (!empty($file)) {
+            if ($file['fil']['error'] == 4) {
+                throw new Exception('file cannot be empty');
+            }
+
+            if (!is_array($file)) {
+                throw new Exception('File gotta be an array');
+            }
+
+            $Mime = array(
+                'image/jpeg',
+                'image/gif',
+                'image/png'
             );
 
-        if(!in_array($file['fil']['type'], $Mime)){
-            throw new Exception("File type isnt supported");
-        }
-        
-        if($file['fil']['size'] > $maxSize){
-            throw new Exception("File is too big");
-        }
-        
-        if($name == null){
-            $name = $file['fil']['name'];
-        }
+            if (!in_array($file['fil']['type'], $Mime)) {
+                throw new Exception("File type isnt supported");
+            }
 
-        if(!$target_path){
-            $target_path = '/';
+            if ($file['fil']['size'] > $maxSize) {
+                throw new Exception("File is too big");
+            }
+
+            if ($Target_name == null) {
+                $Target_name = $file['fil']['name'];
+            }
+
+            if (move_uploaded_file($file['fil']['tmp_name'], $target_path . $Target_name)) {
+                echo $target_path . $Target_name;
+            }
         }
-        
-        if(move_uploaded_file($file['fil']['tmp_name'], $target_path.$name)){
-            echo '1';
-        }
-        
     }
 
     public function Height() {
@@ -117,6 +112,7 @@ class ImageClass {
 
     public function resize($NewWidth = null, $NewHeight = null) {
         list($width, $height) = getimagesize($this->image);
+
         if ($NewHeight == null AND $NewWidth == null) {
             throw new Exception('Cannot resize without height or width');
         }
@@ -252,13 +248,12 @@ class ImageClass {
         imagettftext($this->CreateImage, $fontsize, 0, $y, $x, $white, $font, $text);
     }
 
-    public function crop($target_width,$target_height) {
+    public function crop($target_width, $target_height) {
 //         list($width, $height) = getimagesize($this->image);
 //         
 //         $Imagecrop = imagecreatetruecolor($width, $height);
 //         imagecopyresized($Imagecrop, $this->CreateImage, 0, 0, $target_width, $target_height, $width, $height, $width, $height);
 //         imagecopyresized($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
-         
     }
 
     public function save($name, $quality = 60) {
