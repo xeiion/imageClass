@@ -44,6 +44,44 @@ class ImageClass {
                 break;
         }
     }
+    
+    public function upload($file,$maxSize = 4325720,$target_path = null,$name = null){
+        
+        if($file['fil']['error'] == 4){
+             throw new Exception('file cannot be empty');
+        }
+        
+        if(!is_array($file)){
+            throw new Exception('File gotta be an array');
+        }
+
+        $Mime = array(
+            'image/jpeg',
+            'image/gif',
+            'image/png'
+            );
+
+        if(!in_array($file['fil']['type'], $Mime)){
+            throw new Exception("File type isnt supported");
+        }
+        
+        if($file['fil']['size'] > $maxSize){
+            throw new Exception("File is too big");
+        }
+        
+        if($name == null){
+            $name = $file['fil']['name'];
+        }
+
+        if(!$target_path){
+            $target_path = '/';
+        }
+        
+        if(move_uploaded_file($file['fil']['tmp_name'], $target_path.$name)){
+            echo '1';
+        }
+        
+    }
 
     public function Height() {
         $Height = getimagesize($this->image)[1];
@@ -138,7 +176,6 @@ class ImageClass {
 
     public function blur($blur = 1) {
         for ($i = 1; $i < $blur; $i++) {
-            echo '1';
             imagefilter($this->CreateImage, IMG_FILTER_GAUSSIAN_BLUR);
         }
     }
@@ -183,7 +220,9 @@ class ImageClass {
         $text_height = $bbox[3] - $bbox[1];
 
         if (empty($option[1])) {
-                throw new Exception('Gotta fill second parameter for text position');
+            throw new Exception('Gotta fill second parameter for text position');
+        } elseif ($option[1] != 'center' AND $option[1] != 'right' AND $option[1] != 'left') {
+            throw new Exception('Wrong parameter for position Y');
         } else {
             if ($option[1] == 'left') {
                 $y = ($text_width) + 20;
@@ -193,21 +232,16 @@ class ImageClass {
                 $y = ($width / 2) - ($text_width / 2);
             }
         }
-
-        if ($option[1] == 'left') {
-            $y = ($text_width) + 20;
-        } elseif ($option[1] == 'right') {
-            $y = ($width) - ($text_width) - ($fontsize * 3);
-        } elseif ($option[1] == 'center') {
-            $y = ($width / 2) - ($text_width / 2);
-        }
-
-        if ($option[0] == 'middle') {
-            $x = ($height / 2) - ($text_height / 2);
-        } elseif ($option[0] == 'bottom') {
-            $x = ($height / 1) - ($text_height / 2) - 25;
-        } elseif ($option[0] == 'top') {
-            $x = ($height / 6) - ($text_height / 6) - 5;
+        if ($option[0] != 'middle' AND $option[0] != 'bottom' AND $option[0] != 'top') {
+            throw new Exception('Wrong parameter for position X');
+        } else {
+            if ($option[0] == 'middle') {
+                $x = ($height / 2) - ($text_height / 2);
+            } elseif ($option[0] == 'bottom') {
+                $x = ($height / 1) - ($text_height / 2) - 25;
+            } elseif ($option[0] == 'top') {
+                $x = ($height / 6) - ($text_height / 6) - 5;
+            }
         }
 
         if (!is_numeric($Colors[0]) OR ! is_numeric($Colors[1]) OR ! is_numeric($Colors[2])) {
@@ -218,8 +252,13 @@ class ImageClass {
         imagettftext($this->CreateImage, $fontsize, 0, $y, $x, $white, $font, $text);
     }
 
-    public function crop() {
-        
+    public function crop($target_width,$target_height) {
+//         list($width, $height) = getimagesize($this->image);
+//         
+//         $Imagecrop = imagecreatetruecolor($width, $height);
+//         imagecopyresized($Imagecrop, $this->CreateImage, 0, 0, $target_width, $target_height, $width, $height, $width, $height);
+//         imagecopyresized($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
+         
     }
 
     public function save($name, $quality = 60) {
