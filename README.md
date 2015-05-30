@@ -4,7 +4,8 @@ $image = new Image();
 
 $image->setImage('bg-dark-grain.jpg');
 
-$image->upload($_FILES,$filesize,'test.jpg');
+
+$image->upload($_FILES,filesize limit,'target filename',target path,'file input name can leave default and will use file as name');
 
 $image->crop($x,$y,$width,$height);
 
