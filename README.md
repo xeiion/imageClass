@@ -12,6 +12,10 @@ $image->resize('400', '400');
 
 $image->AddText('test','CFOneTwoTrees-Regular.ttf','52','middle-center','255,255,255');
 
+or for water mark option u can do like
+
+$image->AddText('test','CFOneTwoTrees-Regular.ttf','52','middle-center-watermark','255,255,255');
+
 $image->rotate('40');
 
 $image->brightness(50);
