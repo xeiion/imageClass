@@ -37,6 +37,7 @@ if quality is empty it just apply a 100 quality field and on png a 0 level effec
 
 if you dont write an extension it will use the current extension
 
+on png save you has to use an quality from 0-9
 $image->save('test.jpg', 60);
 
 $image->destroy();
