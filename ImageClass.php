@@ -211,7 +211,7 @@ class ImageClass {
         if ($flip == 'h' OR $flip == 'v') {
             if ($flip == 'v') {
                 /* apply vertical flip to image */
-                $flip = imageflip($this->CreateImage, IMG_FLIP_HORIZONTAL);
+                $flip = imageflip($this->CreateImage, IMG_FLIP_VERTICAL);
             }
             if ($flip == 'h') {
                 /* apply horizontal flip to image */
@@ -300,6 +300,9 @@ class ImageClass {
     }
 
     public function AddText($text = null, $font = null, $fontsize = 13, $option = 'bottom-left', $rgb = '255,255,255') {
+        $opacity = 0;
+        $rotates = 0;
+
         /* getting cordinates value from option */
         $option = explode('-', $option);
 
@@ -321,6 +324,23 @@ class ImageClass {
         $text_width = $bbox[2] - $bbox[0];
         /* getting text height */
         $text_height = $bbox[3] - $bbox[1];
+
+        /* checking if 3rd option is set */
+        if(isset($option[2])){
+        if ($option[2] != null) {
+            echo '1';
+            if ($option[2] != 'watermark') {
+                throw new Exception('3rd value only for watermark');
+                
+            } elseif ($option[2] == 'watermark') {
+                
+                /* rotates the text 45 degrad and set opacity to 75 transparent */
+                $rotates = 45;
+                $opacity = 75;
+            }
+        }
+  }
+
 
         /* checking option 1 is empty */
         if (empty($option[1])) {
@@ -363,10 +383,10 @@ class ImageClass {
         }
 
         /* setting color of text from rgb code */
-        $white = imagecolorallocate($this->CreateImage, $Colors[0], $Colors[1], $Colors[2]);
+        $white = imagecolorallocatealpha($this->CreateImage, $Colors[0], $Colors[1], $Colors[2], $opacity);
 
         /* apply fontSize, font color, font text, to given position y and x */
-        imagettftext($this->CreateImage, $fontsize, 0, $y, $x, $white, $font, $text);
+        imagettftext($this->CreateImage, $fontsize, $rotates, $y, $x, $white, $font, $text);
         return true;
     }
 
