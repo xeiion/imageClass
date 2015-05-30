@@ -45,9 +45,9 @@ class ImageClass {
         }
     }
 
-    public function upload($file, $maxSize = 4325720, $Target_name = null, $target_path = '',$uploadName = 'file') {
+    public function upload($file, $maxSize = 4325720, $Target_name = null, $target_path = '', $uploadName = 'file') {
         /* Check if file is empty or not */
-        print_r($file[$uploadName]);
+
         if (!empty($file)) {
             if ($file[$uploadName]['error'] == 4) {
                 throw new Exception('file cannot be empty');
@@ -163,18 +163,6 @@ class ImageClass {
         /* Resizeing image with new values */
         imagecopyresized($ImageResize, $this->CreateImage, 0, 0, 0, 0, $NewWidth, $NewHeight, $width, $height);
         $this->CreateImage = $ImageResize;
-
-        return true;
-    }
-
-    public function rotate($rotate = null) {
-        if (!$rotate OR ! is_numeric($rotate)) {
-            throw new Exception('Require rotate value');
-        }
-
-        $rotate = imagerotate($this->CreateImage, $rotate, 0);
-
-        $this->CreateImage = $rotate;
 
         return true;
     }
@@ -414,8 +402,58 @@ class ImageClass {
             if (!is_numeric($quality)) {
                 throw new Exception('Quality gotta be a number');
             } else {
-                /* Creating the Image */
-                imagejpeg($this->CreateImage, $name, $quality);
+                /* getting path information from given save name */
+                $PathSave = pathinfo($name);
+                /* getting path information from image */
+                $FullPath = pathinfo($this->image);
+                /* check if extension is set on given name */
+                if (!isset($PathSave['extension'])) {
+                    /* check what extension image have if extension not given */
+                    switch ($FullPath['extension']) {
+                        case 'jpg':
+                        case 'jpeg':
+                            /* Create jpg image */
+                            imagejpeg($this->CreateImage, $name, $quality);
+                            break;
+                        case 'gif':
+                            /* Create gif image */
+                            imagegif($this->CreateImage, $name, $quality);
+                            break;
+                        case 'png':
+                            /* Create png image */
+                            imagepng($this->CreateImage, $name, $quality);
+                            break;
+                        default:
+                             /* return false if extension dont match */
+                            $this->CreateImage = false;
+                            break;
+                    }
+                } else {
+                    /* check what extension is given on save */
+                    switch ($PathSave['extension']) {
+                        case 'jpg':
+                        case 'jpeg':
+                            /* Create jpg image */
+                            imagejpeg($this->CreateImage, $name, $quality);
+                            break;
+                        case 'gif':
+                            /* Create gif image */
+                            imagegif($this->CreateImage, $name, $quality);
+                            break;
+                        case 'png':
+                            /* give error msg if quality is higher or less then between 9 and 0 */
+                            if ($quality > 9 OR $quality < 0) {
+                                throw new Exception('Png decode compress level is betwend 0 and 9');
+                            }
+                            /* Create png image */
+                            imagepng($this->CreateImage, $name, $quality);
+                            break;
+                        default:
+                            /* return false if extension dont match */
+                            $this->CreateImage = false;
+                            break;
+                    }
+                }
             }
         }
         return true;
