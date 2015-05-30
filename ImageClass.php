@@ -45,11 +45,11 @@ class ImageClass {
         }
     }
 
-    public function upload($file, $maxSize = 4325720, $Target_name = null, $target_path = '') {
+    public function upload($file, $maxSize = 4325720, $Target_name = null, $target_path = '',$uploadName = 'file') {
         /* Check if file is empty or not */
-
+        print_r($file[$uploadName]);
         if (!empty($file)) {
-            if ($file['fil']['error'] == 4) {
+            if ($file[$uploadName]['error'] == 4) {
                 throw new Exception('file cannot be empty');
             }
 
@@ -66,25 +66,25 @@ class ImageClass {
 
             /* Check if the mime type is supported from Mime array */
 
-            if (!in_array($file['fil']['type'], $Mime)) {
+            if (!in_array($file[$uploadName]['type'], $Mime)) {
                 throw new Exception("File type isnt supported");
             }
 
             /* Check if the filesize is less then max filesize else throw an Exception */
 
-            if ($file['fil']['size'] > $maxSize) {
+            if ($file[$uploadName]['size'] > $maxSize) {
                 throw new Exception("File is too big");
             }
 
             /* Checking if New file name is given else use default file name */
 
             if ($Target_name == null) {
-                $Target_name = $file['fil']['name'];
+                $Target_name = $file[$uploadName]['name'];
             }
 
             /* upload image to server  */
 
-            if (move_uploaded_file($file['fil']['tmp_name'], $target_path . $Target_name)) {
+            if (move_uploaded_file($file[$uploadName]['tmp_name'], $target_path . $Target_name)) {
                 return $target_path . $Target_name;
             } else {
                 return 'failed to upload';
@@ -326,20 +326,19 @@ class ImageClass {
         $text_height = $bbox[3] - $bbox[1];
 
         /* checking if 3rd option is set */
-        if(isset($option[2])){
-        if ($option[2] != null) {
-            echo '1';
-            if ($option[2] != 'watermark') {
-                throw new Exception('3rd value only for watermark');
-                
-            } elseif ($option[2] == 'watermark') {
-                
-                /* rotates the text 45 degrad and set opacity to 75 transparent */
-                $rotates = 45;
-                $opacity = 75;
+        if (isset($option[2])) {
+            if ($option[2] != null) {
+                echo '1';
+                if ($option[2] != 'watermark') {
+                    throw new Exception('3rd value only for watermark');
+                } elseif ($option[2] == 'watermark') {
+
+                    /* rotates the text 45 degrad and set opacity to 75 transparent */
+                    $rotates = 45;
+                    $opacity = 75;
+                }
             }
         }
-  }
 
 
         /* checking option 1 is empty */
