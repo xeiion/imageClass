@@ -33,6 +33,10 @@ $image->contrast(-100);
 
 $image->gamma('1');
 
+if quality is empty it just apply a 100 quality field and on png a 0 level effect
+
+if you dont write an extension it will use the current extension
+
 $image->save('test.jpg', 60);
 
 $image->destroy();
